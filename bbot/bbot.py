@@ -13,6 +13,7 @@ class BBot(Twins):
                  consumer_key, consumer_secret,
                  access_token, access_token_secret):
         super(BBot, self).__init__(username, password)
+        self.path_to_is_duplicate_list = path_to_is_duplicate_list
         self.api = Api(consumer_key=consumer_key,
                        consumer_secret=consumer_secret,
                        access_token_key=access_token,
@@ -37,7 +38,7 @@ class BBot(Twins):
         self.is_duplicate[notification_id] = True
 
     def save_is_duplicate(self):
-        with open('is_duplicate.list', 'w') as fp:
+        with open(self.path_to_is_duplicate_list, 'w') as fp:
             for idx in self.is_duplicate.keys():
                 print(idx, file=fp)
 
