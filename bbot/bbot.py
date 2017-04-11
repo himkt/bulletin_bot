@@ -44,7 +44,7 @@ class BBot(Twins):
 
     def get_course_notifications(self):
 
-        target_list = ['学群授業', '大学院授業']
+        target_list = ['学群授業', '大学院授業', '在学生へのお知らせ']
 
         def is_target(d):
             """
