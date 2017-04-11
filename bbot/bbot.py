@@ -10,21 +10,30 @@ class BBot(Twins):
         super(BBot, self).__init__(username, password)
 
     def get_course_notifications(self):
+
         target_list = ['学群授業', '大学院授業']
 
         def is_target(d):
+            """
+            科目情報に関するリンクかどうかを判定
+            """
             result = map(lambda t: d.text.startswith(t), target_list)
             return any(result)
 
         def get_attrib(d):
+            """
+            URLからパラメータを抜き出す
+            """
             _raw = d.attrib['href'].split('?')[1]
             return _raw.split('&')
 
         def to_dict(attrib_list):
+            """
+            パラメータのリストをDictionaryに変換
+            """
             return dict(map(lambda attr: attr.split('='), attrib_list))
 
         r = self.req("KJW0001100-flow")
-
         for d in pq(r.text)("a"):
 
             if d.text is None:
@@ -44,11 +53,19 @@ class BBot(Twins):
                     dd_attrib_dict = to_dict(dd_attrib_list)
 
                     if dd_attrib_dict['_eventId'] == 'confirm':
-                        rrr = self.get(dd_attrib_dict)
-                        body = pq(rrr.text)("div.keiji-naiyo")
+                        # /* TODO */
+                        # self.reqすると掲示板トップに
+                        # 移動してしまってdd_atrib_dictが
+                        # 示すページに遷移できない
+                        """
+                        # self.req("KJW0001100-flow")
+                        # rrr = self.get(dd_attrib_dict)
+                        # body = pq(rrr.text)("div.keiji-naiyo")
+                        # if title and body:
+                        #     print(title, body)
+                        """
 
-                        if title and body:
-                            print(title, body)
+                        print(title)
 
                         span = random() * 5
                         sleep(span)
