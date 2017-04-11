@@ -3,12 +3,19 @@ from pyquery import PyQuery as pq
 from time import sleep
 from random import random
 from re import search
+from twitter import Api
 
 
 class BBot(Twins):
 
-    def __init__(self, username, password):
+    def __init__(self, username, password,
+                 consumer_key, consumer_secret,
+                 access_token, access_token_secret):
         super(BBot, self).__init__(username, password)
+        self.api = Api(consumer_key=consumer_key,
+                       consumer_secret=consumer_secret,
+                       access_token_key=access_token,
+                       access_token_secret=access_token_secret)
 
     def get_course_notifications(self):
 
@@ -60,7 +67,9 @@ class BBot(Twins):
                         rrr = self.get(dd_attrib_dict)
                         body = pq(rrr.text)("div.keiji-naiyo")
                         if title and body:
-                            print(title, body)
+                            tweet = title + '\n' + body.text()
+                            tweet = tweet[:140]
+                            self.api.PostUpdate(tweet)  # TODO: 重複確認
 
                         span = random() * 5
                         sleep(span)
