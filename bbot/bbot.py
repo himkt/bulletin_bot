@@ -44,6 +44,7 @@ class BBot(Twins):
                 attrib_list = get_attrib(d)
                 attrib_dict = to_dict(attrib_list)
 
+                self.req("KJW0001100-flow")
                 rr = self.get(attrib_dict)
                 for dd in pq(rr.text)("a"):
                     title = dd.text
