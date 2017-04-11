@@ -4,11 +4,12 @@ from time import sleep
 from random import random
 from re import search
 from twitter import Api
+from collections import defaultdict
 
 
 class BBot(Twins):
 
-    def __init__(self, username, password,
+    def __init__(self, username, password, path_to_is_duplicate_list,
                  consumer_key, consumer_secret,
                  access_token, access_token_secret):
         super(BBot, self).__init__(username, password)
@@ -16,6 +17,29 @@ class BBot(Twins):
                        consumer_secret=consumer_secret,
                        access_token_key=access_token,
                        access_token_secret=access_token_secret)
+
+        is_duplicate = defaultdict(lambda: False)
+        with open(path_to_is_duplicate_list) as fp:
+            for line in fp:
+                is_duplicate[line.rstrip()] = True
+        self.is_duplicate = is_duplicate
+
+    def post_tweet(self, notification_id, text):
+        if not self.is_duplicate[notification_id]:
+            try:
+                self.api.PostUpdate(text)
+                self.update_is_duplicate(notification_id)
+
+            except Exception as e:
+                print(e)
+
+    def update_is_duplicate(self, notification_id):
+        self.is_duplicate[notification_id] = True
+
+    def save_is_duplicate(self):
+        with open('is_duplicate.list', 'w') as fp:
+            for idx in self.is_duplicate.keys():
+                print(idx, file=fp)
 
     def get_course_notifications(self):
 
@@ -68,15 +92,17 @@ class BBot(Twins):
                         rrr = self.get(dd_attrib_dict)
 
                         body = pq(rrr.text)("div.keiji-naiyo")
-                        if title and body:
-                            tweet = title + '\n' + body.text()
-                            tweet = tweet[:140]
-                            self.api.PostUpdate(tweet)  # TODO: 重複確認
+
+                        if not title or not body:
+                            continue
+
+                        tweet = title + '\n' + body.text()
+                        tweet = tweet[:140]
+
+                        notification_id = dd_attrib_dict['seqNo']
+                        self.post_tweet(notification_id, tweet)
 
                         span = random() * 5
                         sleep(span)
 
-
-if __name__ == '__main__':
-    client = BBot('<your student id>', 'password')
-    client.get_course_notifications()
+            self.save_is_duplicate()
