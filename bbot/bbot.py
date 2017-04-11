@@ -44,7 +44,7 @@ class BBot(Twins):
 
     def get_course_notifications(self):
 
-        target_list = ['学群授業', '大学院授業']
+        target_list = ['学群授業', '大学院授業', '在学生へのお知らせ']
 
         def is_target(d):
             """
@@ -84,7 +84,7 @@ class BBot(Twins):
                     dd_attrib_list = get_attrib(dd)
                     dd_attrib_dict = to_dict(dd_attrib_list)
 
-                    if not search(r'休講|変更', title):
+                    if not search(r'休講|変更|平成29年度', title):
                         continue
 
                     if dd_attrib_dict['_eventId'] == 'confirm':
