@@ -59,9 +59,10 @@ class BBot(Twins):
                         self.req("KJW0001100-flow")
                         self.get(attrib_dict)
                         rrr = self.get(dd_attrib_dict)
+
                         body = pq(rrr.text)("div.keiji-naiyo")
                         if title and body:
-                            print(title, body)
+                            print(title, body.text())
 
                         span = random() * 5
                         sleep(span)
