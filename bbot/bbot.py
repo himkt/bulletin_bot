@@ -2,6 +2,7 @@ from twins import Twins
 from pyquery import PyQuery as pq
 from time import sleep
 from random import random
+from re import search
 
 
 class BBot(Twins):
@@ -43,29 +44,23 @@ class BBot(Twins):
                 attrib_list = get_attrib(d)
                 attrib_dict = to_dict(attrib_list)
 
-                self.req("KJW0001100-flow")
                 rr = self.get(attrib_dict)
-
                 for dd in pq(rr.text)("a"):
                     title = dd.text
 
                     dd_attrib_list = get_attrib(dd)
                     dd_attrib_dict = to_dict(dd_attrib_list)
 
-                    if dd_attrib_dict['_eventId'] == 'confirm':
-                        # /* TODO */
-                        # self.reqすると掲示板トップに
-                        # 移動してしまってdd_atrib_dictが
-                        # 示すページに遷移できない
-                        """
-                        # self.req("KJW0001100-flow")
-                        # rrr = self.get(dd_attrib_dict)
-                        # body = pq(rrr.text)("div.keiji-naiyo")
-                        # if title and body:
-                        #     print(title, body)
-                        """
+                    if not search(r'休講|変更', title):
+                        continue
 
-                        print(title)
+                    if dd_attrib_dict['_eventId'] == 'confirm':
+                        self.req("KJW0001100-flow")
+                        self.get(attrib_dict)
+                        rrr = self.get(dd_attrib_dict)
+                        body = pq(rrr.text)("div.keiji-naiyo")
+                        if title and body:
+                            print(title, body)
 
                         span = random() * 5
                         sleep(span)
