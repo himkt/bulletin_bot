@@ -84,7 +84,7 @@ class BBot(Twins):
                     dd_attrib_list = get_attrib(dd)
                     dd_attrib_dict = to_dict(dd_attrib_list)
 
-                    if not search(r'休講|変更|修正|案内|決定|重要', title):
+                    if not search(r'休講|変更|修正|案内|決定|重要|平成29年度', title):
                         continue
 
                     if search(r'学内限定', title):
