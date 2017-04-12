@@ -35,16 +35,23 @@ class BBot(Twins):
                 print(e)
 
     def update_is_duplicate(self, notification_id):
+        """
+        一度通知したことのあるお知らせDirctionaryの更新
+        """
         self.is_duplicate[notification_id] = True
 
     def save_is_duplicate(self):
+        """
+        一度通知をしたことのあるお知らせのお知らせIDを保存する
+        """
         with open(self.path_to_is_duplicate_list, 'w') as fp:
             for idx in self.is_duplicate.keys():
                 print(idx, file=fp)
 
     def get_course_notifications(self):
-
         target_list = ['学群授業', '大学院授業']
+        watch_keyword_list = ['休講', '変更', '修正', '訂正',
+                              '案内', '決定', '重要', '平成29年度']
 
         def is_target(d):
             """
@@ -84,7 +91,10 @@ class BBot(Twins):
                     dd_attrib_list = get_attrib(dd)
                     dd_attrib_dict = to_dict(dd_attrib_list)
 
-                    if not search(r'休講|変更|修正|案内|決定|重要|平成29年度', title):
+                    watch_keyword_query = '|'.join(watch_keyword_list)
+                    watch_keyword_query = r'{}'.format(watch_keyword_query)
+
+                    if not search(watch_keyword_query, title):
                         continue
 
                     if search(r'学内限定', title):
