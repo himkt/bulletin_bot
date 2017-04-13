@@ -114,7 +114,7 @@ class BBot(Twins):
                         if not title or not body:
                             continue
 
-                        tweet = '#' + targe + ' ' + title + '\n' + body.text()
+                        tweet = '#' + target + ' ' + title + '\n' + body.text()
                         tweet = tweet[:140]
 
                         notification_id = dd_attrib_dict['seqNo']
