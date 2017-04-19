@@ -116,7 +116,7 @@ class BBot(Twins):
                         notification_id = dd_attrib_dict['seqNo']
                         self.post_tweet(notification_id, tweet)
 
-                        span = random() * 5
+                        span = random() * 20
                         sleep(span)
 
             self.save_is_duplicate()
