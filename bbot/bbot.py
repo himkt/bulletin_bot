@@ -57,8 +57,11 @@ class BBot(Twins):
             """
             科目情報に関するリンクかどうかを判定
             """
-            result = map(lambda t: d.text.startswith(t), target_list)
-            return any(result)
+            for target in target_list:
+                if d.text.startswith(target):
+                    return target
+
+            return False
 
         def get_attrib(d):
             """
@@ -79,7 +82,8 @@ class BBot(Twins):
             if d.text is None:
                 continue
 
-            if is_target(d):
+            target = is_target(d)
+            if target:
                 attrib_list = get_attrib(d)
                 attrib_dict = to_dict(attrib_list)
 
@@ -110,7 +114,7 @@ class BBot(Twins):
                         if not title or not body:
                             continue
 
-                        tweet = title + '\n' + body.text()
+                        tweet = '#' + target + ' ' + title + '\n' + body.text()
                         tweet = tweet[:140]
 
                         notification_id = dd_attrib_dict['seqNo']
