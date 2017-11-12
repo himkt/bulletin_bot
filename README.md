@@ -1,7 +1,7 @@
-### Bulletin Bot
-筑波大学の授業に関するお知らせを通知します．
+## Bulletin Bot
 
-Twitterアカウントは[こちら](https://twitter.com/itf_notify)．
+筑波大学・大学院の授業に関する掲示をTwitterでお知らせするBot
+Twitterアカウントは[こちら](https://twitter.com/itf_notify)
 
 ### requirement
 - [twins](https://github.com/coins13/twins)

@@ -35,23 +35,33 @@ class BBot(Twins):
                 print(e)
 
     def update_is_duplicate(self, notification_id):
+        """
+        一度通知したことのあるお知らせDirctionaryの更新
+        """
         self.is_duplicate[notification_id] = True
 
     def save_is_duplicate(self):
+        """
+        一度通知をしたことのあるお知らせのお知らせIDを保存する
+        """
         with open(self.path_to_is_duplicate_list, 'w') as fp:
             for idx in self.is_duplicate.keys():
                 print(idx, file=fp)
 
     def get_course_notifications(self):
-
         target_list = ['学群授業', '大学院授業']
+        watch_keyword_list = ['休講', '変更', '修正', '訂正',
+                              '案内', '決定', '重要', '平成29年度']
 
         def is_target(d):
             """
             科目情報に関するリンクかどうかを判定
             """
-            result = map(lambda t: d.text.startswith(t), target_list)
-            return any(result)
+            for target in target_list:
+                if d.text.startswith(target):
+                    return target
+
+            return False
 
         def get_attrib(d):
             """
@@ -72,7 +82,8 @@ class BBot(Twins):
             if d.text is None:
                 continue
 
-            if is_target(d):
+            target = is_target(d)
+            if target:
                 attrib_list = get_attrib(d)
                 attrib_dict = to_dict(attrib_list)
 
@@ -84,7 +95,13 @@ class BBot(Twins):
                     dd_attrib_list = get_attrib(dd)
                     dd_attrib_dict = to_dict(dd_attrib_list)
 
-                    if not search(r'休講|変更', title):
+                    watch_keyword_query = '|'.join(watch_keyword_list)
+                    watch_keyword_query = r'{}'.format(watch_keyword_query)
+
+                    if not search(watch_keyword_query, title):
+                        continue
+
+                    if search(r'学内限定', title):
                         continue
 
                     if dd_attrib_dict['_eventId'] == 'confirm':
@@ -97,13 +114,13 @@ class BBot(Twins):
                         if not title or not body:
                             continue
 
-                        tweet = title + '\n' + body.text()
+                        tweet = '#' + target + ' ' + title + '\n' + body.text()
                         tweet = tweet[:140]
 
                         notification_id = dd_attrib_dict['seqNo']
                         self.post_tweet(notification_id, tweet)
 
-                        span = random() * 5
+                        span = random() * 20
                         sleep(span)
 
             self.save_is_duplicate()
